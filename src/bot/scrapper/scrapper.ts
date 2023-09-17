@@ -1,14 +1,16 @@
-import puppeteer from "puppeteer";
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 import {Page, Browser} from "puppeteer";
-
-interface ScrapperOptions {
+export interface ScrapperOptions {
     searchValue: string;
     maxRecords: number;
 }
+puppeteer.use(StealthPlugin());
 
 export class Scrapper implements ScrapperOptions {
     searchValue: string;
     maxRecords: number;
+    private browser: Browser
 
     constructor(options: ScrapperOptions) {
         this.searchValue = options.searchValue;
@@ -16,11 +18,11 @@ export class Scrapper implements ScrapperOptions {
     }
 
     async initializePage() {
-        const browser = await puppeteer.launch();
-        return browser.newPage();
+        this.browser = await puppeteer.launch({headless: 'new'});
+        return this.browser.newPage();
     }
     async navigateToUrl(page: Page, url: string) {
-        await page.goto(url);
+        await page.goto(url, { waitUntil: 'load' });
     }
 
     async searchForValue(page: Page, selector: string, value: string) {
@@ -44,8 +46,8 @@ export class Scrapper implements ScrapperOptions {
         await page.close();
     }
 
-    async closeBrowser(browser: Browser) {
-        await browser.close();
+    async closeBrowser() {
+        await this.browser.close();
     }
 
 }

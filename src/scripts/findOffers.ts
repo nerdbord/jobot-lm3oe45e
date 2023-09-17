@@ -1,9 +1,15 @@
-const findOffers = () => {
+import { IndeedScrapper } from "../bot/scrapper/indeed.page";
+
+const findOffers = async () => {
     console.log('Scrapping...')
 
-    setTimeout(() => {
-        console.log('10 offers found.')
-    }, 3000)
+    const ind = new IndeedScrapper({
+        searchValue: 'pascal',
+        maxRecords: 10
+    });    
+    await ind.run();
+    const offers = await ind.showOffers();
+    console.log(offers);
 }
 
 findOffers()
