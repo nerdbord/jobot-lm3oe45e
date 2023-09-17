@@ -1,10 +1,11 @@
-import puppeteer from "puppeteer";
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 import {Page, Browser} from "puppeteer";
-
 export interface ScrapperOptions {
     searchValue: string;
     maxRecords: number;
 }
+puppeteer.use(StealthPlugin());
 
 export class Scrapper implements ScrapperOptions {
     searchValue: string;
@@ -17,7 +18,7 @@ export class Scrapper implements ScrapperOptions {
     }
 
     async initializePage() {
-        this.browser = await puppeteer.launch({headless: false});
+        this.browser = await puppeteer.launch({headless: 'new'});
         return this.browser.newPage();
     }
     async navigateToUrl(page: Page, url: string) {

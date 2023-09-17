@@ -25,33 +25,43 @@ export class IndeedScrapper extends Scrapper {
         return this.offers;
     }
 
-    async getJobOffer(jobUrl: string): Promise<JobOffer>{
-        await this.navigateToUrl(this.page, jobUrl);
-        await this.page.waitForSelector('#viewJobSSRRoot');
-        let offer = await this.page.$eval('#viewJobSSRRoot', function(element) {
-            function formatSalaryRange(salaryText: string) {
-                let currency = salaryText.includes('$') ? '$' : 'other';
-                if(!salaryText || salaryText.length === 0) return [ '', '', currency ];
-                if(!salaryText.includes('-')) return [ salaryText, '', currency ];
-                let salaryArray = salaryText.split('-');
-                let salaryFrom = salaryArray[0].trim();
-                let salaryTo = salaryArray[1].trim();
-        
-                return [ salaryFrom, salaryTo, currency ];
-            }
-            const [ salaryFrom, salaryTo, currency ] = formatSalaryRange(element.querySelector('#salaryInfoAndJobType > span')?.textContent ?? '')
-            return {
-                title: element.querySelector('h1')?.textContent,
-                description: element.querySelector('#jobDescriptionText')?.textContent.replace('\n', '').slice(0,100).concat('','...') ?? '',
-                company: element.querySelector('[data-testid="inlineHeader-companyName"] > span > a')?.textContent ?? '',
-                salaryFrom,
-                salaryTo,
-                currency,
-                technologies: [],
-                addedAt: ''
-            }
-        });
-        return { ...offer, offerURL: jobUrl};
+    async getJobOffer(jobUrl: string, counter: number): Promise<JobOffer|{}>{
+        process.stdout.clearLine(0);
+        process.stdout.write(`\r[ ${counter}/${this.jobUrls.length} ] Fetching data from URL: ${jobUrl}`);
+        let offer: JobOffer;
+        try {
+            await this.navigateToUrl(this.page, jobUrl);
+            await this.page.waitForSelector('#viewJobSSRRoot');
+            offer = await this.page.$eval('#viewJobSSRRoot', function(element, jobUrl) {
+                function formatSalaryRange(salaryText: string) {
+                    let currency = salaryText.includes('$') ? '$' : 'other';
+                    if(!salaryText || salaryText.length === 0) return [ '', '', currency ];
+                    if(!salaryText.includes('-')) return [ salaryText, '', currency ];
+                    let salaryArray = salaryText.split('-');
+                    let salaryFrom = salaryArray[0].trim();
+                    let salaryTo = salaryArray[1].trim();
+            
+                    return [ salaryFrom, salaryTo, currency ];
+                }
+                const [ salaryFrom, salaryTo, currency ] = formatSalaryRange(element.querySelector('#salaryInfoAndJobType > span')?.textContent ?? '')
+                return {
+                    title: element.querySelector('h1')?.textContent,
+                    description: element.querySelector('#jobDescriptionText')?.textContent.replace('\n', '').slice(0,100).concat('','...') ?? '',
+                    company: element.querySelector('[data-testid="inlineHeader-companyName"] > span > a')?.textContent ?? '',
+                    salaryFrom,
+                    salaryTo,
+                    currency,
+                    technologies: [],
+                    addedAt: '',
+                    offerURL: jobUrl
+                }
+            }, jobUrl);
+        } catch(err){
+            console.error(' | Something went wrong:', JSON.stringify(err));
+            return {}
+        }
+        // console.log('Success');
+        return offer;
     }
 
     async getPageLinks(){
@@ -60,6 +70,7 @@ export class IndeedScrapper extends Scrapper {
             elements => elements.map(el => (el.querySelector('a')?.href))
         );
         this.jobUrls = this.jobUrls.concat(tmpUrls.filter(url => url?.length > 0));
+        process.stdout.write(`\rSearching... Found [ ${this.jobUrls.length} ] urls.`);
     }
 
     async checkIfIsNextPage(){
@@ -83,9 +94,14 @@ export class IndeedScrapper extends Scrapper {
 
     async getDataFromAllUrls(): Promise<void>{
         if(this.jobUrls.length === 0) return;
+        process.stdout.write('\n');
+        let i =1;
         for(let jobUrl of this.jobUrls){
-            let offer = await this.getJobOffer(jobUrl);
-            this.offers.push(offer);
+            let offer = await this.getJobOffer(jobUrl, i);
+            i+=1;
+            if('title' in offer) {
+                this.offers.push(offer);
+            }
         }
     }
     
