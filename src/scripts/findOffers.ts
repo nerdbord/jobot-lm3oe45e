@@ -9,7 +9,7 @@ const findOffers = async () => {
     });    
     await ind.run();
     const offers = await ind.showOffers();
-    console.log(offers);
+    ind.writeToCsv(offers);
 }
 
 findOffers()
