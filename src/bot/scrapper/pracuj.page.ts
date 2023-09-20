@@ -3,39 +3,45 @@ import { JobOffer, ScrapperOptions } from './types';
 import { Scrapper } from './scrapper';
 
 export class PracujScrapper extends Scrapper {
-  private url: string = 'https://www.pracuj.pl/';
+  private url: string = 'https://it.pracuj.pl/';
   private page: Page;
   private jobOffers: JobOffer[];
-  private offerLinks: string[];
+  // private offerLinks: string[];
 
   constructor(options: ScrapperOptions) {
     super(options);
     this.jobOffers = [];
-    this.offerLinks = [];
+    // this.offerLinks = [];
   }
 
-  async scrapeTechnologies(page: Page, linkList: string[]) {
-    for (const link of linkList) {
-      if (link.trim() !== '') {
-        await page.goto(link);
-
-        const technologies = await page.$$eval(
-          '[data-test="text-technology-name"]',
-          (technologyElements) => {
-            return Array.from(technologyElements).map((element) =>
-              element.textContent.trim(),
-            );
-          },
-        );
-
-        const offer = this.jobOffers.find((offer) => offer.offerURL === link);
-        if (offer) {
-          offer.technologies = technologies;
-        }
-        this.jobOffers = [...this.jobOffers, offer];
-      }
-    }
+  async showOffers(): Promise<JobOffer[]> {
+    return this.jobOffers;
   }
+
+  // async scrapeTechnologies(page: Page, linkList: string[]) {
+  //
+  //   for (const link of linkList) {
+  //     if (link.trim() !== '') {
+  //       await page.goto(link);
+  //
+  //       await page.waitForSelector('#kansas-offerview', { timeout: 3000 });
+  //       const technologies = await page.$$eval(
+  //         '[data-test="text-technology-name"]',
+  //         (technologyElements) => {
+  //           console.log(technologyElements, 'eeeeeeeeeeeeeeeeeeeeeeeeeee');
+  //           return Array.from(technologyElements).map((element) =>
+  //             element.textContent.trim(),
+  //           );
+  //         },
+  //       );
+  //       const offer = this.jobOffers.find((offer) => offer.offerURL === link);
+  //       if (offer) {
+  //         offer.technologies = technologies;
+  //       }
+  //       this.jobOffers = [...this.jobOffers, offer];
+  //     }
+  //   }
+  // }
 
   async scrapeJobOffers(page: Page) {
     await page.waitForSelector('[data-test="text-added"]');
@@ -102,6 +108,17 @@ export class PracujScrapper extends Scrapper {
             ? addedAtElement.textContent.replace('Opublikowana: ', '')
             : '';
 
+          const technologiesElement = element.querySelectorAll(
+            '[data-test="technologies-tag"]',
+          );
+
+          const technologies = technologiesElement
+            ? Array.from(technologiesElement).map((el) => el.textContent)
+            : [''];
+
+          console.log(technologiesElement);
+          console.log(technologies);
+
           return {
             title,
             description,
@@ -109,6 +126,7 @@ export class PracujScrapper extends Scrapper {
             salaryFrom,
             salaryTo,
             currency,
+            technologies,
             offerURL,
             addedAt,
           };
@@ -116,16 +134,16 @@ export class PracujScrapper extends Scrapper {
       },
     );
 
-    this.jobOffers = [...this.jobOffers, ...data];
-
-    data.map((el) => this.offerLinks.push(el.offerURL));
+    this.jobOffers.push(...data);
   }
 
   async checkIfIsNextPage() {
     let isNextPage = false;
 
     await this.page
-      .waitForSelector('[data-test="bottom-pagination-button-next"]')
+      .waitForSelector('[data-test="bottom-pagination-button-next"]', {
+        timeout: 5000,
+      })
       .then(() => (isNextPage = true))
       .catch(() => (isNextPage = false));
     return isNextPage;
@@ -159,7 +177,7 @@ export class PracujScrapper extends Scrapper {
       );
       await this.searchForValue(
         this.page,
-        'input.core_fhefgxl',
+        '[data-test="input-field"]',
         `${this.searchValue}`,
       );
       await this.clickElement(
@@ -170,8 +188,8 @@ export class PracujScrapper extends Scrapper {
       await this.page.waitForSelector('#relative-wrapper');
       await this.scrapeJobOffers(this.page);
       await this.scrapeNextPage(this.page);
-      await this.scrapeTechnologies(this.page, this.offerLinks);
       console.log(this.jobOffers);
+      console.log(this.jobOffers.length);
     } catch (error) {
       console.error('Wystąpił błąd:', error);
     } finally {
