@@ -1,3 +1,4 @@
+import { PracujScrapper } from '../bot/scrapper/pracuj.page';
 import { IndeedScrapper } from "../bot/scrapper/indeed.page";
 
 const findOffers = async () => {
@@ -10,6 +11,12 @@ const findOffers = async () => {
     await ind.run();
     const offers = await ind.showOffers();
     ind.writeToCsv(offers);
-}
 
-findOffers()
+  const pracuj = new PracujScrapper({
+    searchValue: 'php',
+    maxRecords: 10,
+  });
+  await pracuj.run();
+};
+
+findOffers();

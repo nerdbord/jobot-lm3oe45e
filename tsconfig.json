@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "module": "commonjs",
+    "module": "CommonJS",
+    "target": "ESNext",
     "outDir": "dist",
     "rootDir": "src",
     "esModuleInterop": true,
     "sourceMap": true,
+    "moduleResolution": "node",
     "types": ["node"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
