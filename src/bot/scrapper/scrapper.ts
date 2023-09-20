@@ -1,51 +1,43 @@
-import puppeteer from "puppeteer";
-import {Page, Browser} from "puppeteer";
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+puppeteer.use(StealthPlugin());
 
-interface ScrapperOptions {
-    searchValue: string;
-    maxRecords: number;
-}
+import { Page, Browser } from 'puppeteer';
+import { ScrapperOptions } from './types';
 
 export class Scrapper implements ScrapperOptions {
-    searchValue: string;
-    maxRecords: number;
+  searchValue: string;
+  maxRecords: number;
+  private browser: Browser;
 
-    constructor(options: ScrapperOptions) {
-        this.searchValue = options.searchValue;
-        this.maxRecords = options.maxRecords;
-    }
+  constructor(options: ScrapperOptions) {
+    this.searchValue = options.searchValue;
+    this.maxRecords = options.maxRecords;
+  }
 
-    async initializePage() {
-        const browser = await puppeteer.launch();
-        return browser.newPage();
-    }
-    async navigateToUrl(page: Page, url: string) {
-        await page.goto(url);
-    }
+  async initializePage() {
+    this.browser = await puppeteer.launch({ headless: 'new' });
+    return this.browser.newPage();
+  }
 
-    async searchForValue(page: Page, selector: string, value: string) {
-        await page.type(selector, value);
-        await page.keyboard.press('Enter');
-    }
+  async navigateToUrl(page: Page, url: string) {
+    await page.goto(url, { waitUntil: 'load' });
+  }
 
-    async clickElement(page: Page, selector: string) {
-        await page.click(selector);
-    }
+  async searchForValue(page: Page, selector: string, value: string) {
+    await page.type(selector, value);
+    await page.keyboard.press('Enter');
+  }
 
-    async scrapeData(page: Page, selector: string) {
-        const data = await page.$$eval(selector, elements => {
-            // Przetwarzanie elementów i ekstrakcja danych
-            return elements.map(element => element.textContent);
-        });
-        return data;
-    }
+  async clickElement(page: Page, selector: string) {
+    await page.click(selector);
+  }
 
-    async closePage(page: Page) {
-        await page.close();
-    }
+  async closePage(page: Page) {
+    await page.close();
+  }
 
-    async closeBrowser(browser: Browser) {
-        await browser.close();
-    }
-
+  async closeBrowser() {
+    await this.browser.close();
+  }
 }

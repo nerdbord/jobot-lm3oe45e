@@ -1,9 +1,13 @@
-const findOffers = () => {
-    console.log('Scrapping...')
+import { PracujScrapper } from '../bot/scrapper/pracuj.page';
 
-    setTimeout(() => {
-        console.log('10 offers found.')
-    }, 3000)
-}
+const findOffers = async () => {
+  console.log('Scrapping...');
 
-findOffers()
+  const pracuj = new PracujScrapper({
+    searchValue: 'php',
+    maxRecords: 10,
+  });
+  await pracuj.run();
+};
+
+findOffers();
