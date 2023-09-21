@@ -4,19 +4,23 @@ import { IndeedScrapper } from '../bot/scrapper/indeed.page';
 const findOffers = async () => {
   console.log('Scrapping...');
 
-  // const ind = new IndeedScrapper({
-  //     searchValue: 'pascal',
-  //     maxRecords: 10
-  // });
-  // await ind.run();
-  // const offers = await ind.showOffers();
-  // ind.writeToCsv(offers);
+  const ind = new IndeedScrapper({
+    searchValue: 'pascal',
+    maxRecords: 10,
+  });
+  await ind.run();
+  const offers = await ind.showOffers();
+  ind.writeToCsv(offers);
+  ind.saveDataToJson(offers, 'indeed.com');
 
   const pracuj = new PracujScrapper({
     searchValue: 'php',
     maxRecords: 10,
   });
   await pracuj.run();
+  const jobOffers = await pracuj.showOffers();
+  pracuj.writeToCsv(jobOffers);
+  pracuj.saveDataToJson(jobOffers, 'it.pracuj.pl');
 };
 
 findOffers();

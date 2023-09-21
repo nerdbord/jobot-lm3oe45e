@@ -50,12 +50,28 @@ export class Scrapper implements ScrapperOptions {
     await this.browser.close();
   }
 
-  saveDataToJson(data: JobOffer[]) {
+  saveDataToJson(data: JobOffer[], service: string) {
     if (!data || data.length === 0) {
       console.log('No data to save.');
       return;
     }
     const date = formatDate(new Date());
+    const outputDir = './scrap-results';
+    const outputFilename = `${outputDir}/${service}-${date}-offers.json`;
+
+    try {
+      if (!fs.existsSync(`${outputDir}`)) {
+        fs.mkdirSync(`${outputDir}`, { recursive: true });
+        console.log(`Directory for data is created.`);
+      } else {
+        console.log(`Directory for data already exists.`);
+      }
+
+      fs.writeFileSync(outputFilename, JSON.stringify(data), 'utf8');
+      console.log(`Data saved to ${outputFilename}`);
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
   }
 
   writeToCsv(data: JobOffer[]): void {
