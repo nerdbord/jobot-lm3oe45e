@@ -27,7 +27,7 @@ export class IndeedScrapper extends Scrapper {
     process.stdout.write(
       `\r[ ${counter}/${this.jobUrls.length} ] Fetching data from URL: ${jobUrl}`,
     );
-    let offer: JobOffer;
+    let offer: JobOffer | {} = {};
     try {
       await this.navigateToUrl(this.page, jobUrl);
       await this.page.waitForSelector('#viewJobSSRRoot');
@@ -53,10 +53,11 @@ export class IndeedScrapper extends Scrapper {
             title: element.querySelector('h1')?.textContent,
             description:
               element
-                .querySelector('#jobDescriptionText')
-                ?.textContent.replace('\n', '')
-                .slice(0, 100)
-                .concat('', '...') ?? '',
+                ?.querySelector('#jobDescriptionText')
+                ?.textContent
+                ?.replace('\n', '')
+                ?.slice(0, 100)
+                ?.concat('', '...') ?? '',
             company:
               element.querySelector(
                 '[data-testid="inlineHeader-companyName"] > span > a',
@@ -80,11 +81,12 @@ export class IndeedScrapper extends Scrapper {
   }
 
   async getPageLinks() {
-    const tmpUrls = await this.page.$$eval('h2.jobTitle', (elements) =>
-      elements.map((el) => el.querySelector('a')?.href),
+    let tmpUrls: string[] = []
+    tmpUrls = await this.page.$$eval('h2.jobTitle', elements =>
+      elements.map( el => el?.querySelector('a')?.href ?? '' )
     );
     this.jobUrls = this.jobUrls.concat(
-      tmpUrls.filter((url) => url?.length > 0),
+      tmpUrls?.filter(url => url?.length > 0)
     );
     process.stdout.write(
       `\rSearching... Found [ ${this.jobUrls.length} ] urls.`,
@@ -132,6 +134,7 @@ export class IndeedScrapper extends Scrapper {
     await this.page.setViewport({ width: 600, height: 1024 });
 
     await this.getAllPagesLinks();
+    this.jobUrls = this.jobUrls.slice(0, this.maxRecords)
     await this.getDataFromAllUrls();
 
     await this.closePage(this.page);
