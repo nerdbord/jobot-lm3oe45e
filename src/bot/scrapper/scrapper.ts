@@ -74,13 +74,13 @@ export class Scrapper implements ScrapperOptions {
     }
   }
 
-  writeToCsv(data: JobOffer[]): void {
+  writeToCsv(data: JobOffer[], serviceName: string): void {
     if (!data || data.length === 0) {
       console.log('No data to save.');
       return;
     }
     const outputDir = './scrap-results';
-    const outputFilename = 'offers.csv';
+    const outputFilename = `${serviceName.replace(/[^a-zA-Z0-9]/g, "_")}-offers.csv`;
     try {
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
