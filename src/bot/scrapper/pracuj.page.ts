@@ -10,6 +10,7 @@ export class PracujScrapper extends Scrapper {
   constructor(options: ScrapperOptions) {
     super(options);
     this.jobOffers = [];
+    this.maxRecords = options.maxRecords || 10;
   }
 
   async showOffers(): Promise<JobOffer[]> {
@@ -106,8 +107,9 @@ export class PracujScrapper extends Scrapper {
           });
         },
       );
+      const limitedData = data.slice(0, this.maxRecords);
 
-      this.jobOffers.push(...data);
+      this.jobOffers.push(...limitedData);
     } catch (error) {
       console.error(' | Something went wrong:', JSON.stringify(error));
     }
@@ -129,6 +131,9 @@ export class PracujScrapper extends Scrapper {
   }
 
   async scrapeNextPage(page: Page) {
+    if (this.jobOffers.length >= this.maxRecords) {
+      return;
+    }
     let isNextPage = await this.checkIfIsNextPage();
     try {
       while (isNextPage) {
@@ -137,6 +142,9 @@ export class PracujScrapper extends Scrapper {
         if (isNextPage) {
           console.log('scraping next page');
           await this.scrapeJobOffers(page);
+          if (this.jobOffers.length >= this.maxRecords) {
+            break;
+          }
           await this.clickElement(
             page,
             '[data-test="bottom-pagination-button-next"]',

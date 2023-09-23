@@ -1,30 +1,35 @@
 import { PracujScrapper } from '../bot/scrapper/pracuj.page';
 import { IndeedScrapper } from '../bot/scrapper/indeed.page';
 
-const yargs = require('yargs');
+import yargs, { Arguments } from 'yargs';
 
-const argv = yargs
-  .options({
-    s: {
-      alias: 'search',
-      describe: 'Search keyword',
-      demandOption: true,
-      type: 'string',
-    },
-    l: {
-      alias: 'limit',
-      describe: 'Results limit',
-      type: 'number',
-      default: 10,
-    },
-  })
-  .argv;
+interface MyArgs extends Arguments {
+  s: string;
+  l: number;
+}
 
-const findOffers = async () => {
+const argv = yargs.options({
+  s: {
+    alias: 'search',
+    describe: 'Search keyword',
+    demandOption: true,
+    type: 'string',
+  },
+  l: {
+    alias: 'limit',
+    describe: 'Results limit',
+    type: 'number',
+    default: 10,
+  },
+}).argv as MyArgs;
+
+export const findOffers = async () => {
   console.log('Scrapping...');
 
   const searchKeyword = argv.s;
   const limitResults = argv.l;
+
+  console.log(searchKeyword);
 
   const ind = new IndeedScrapper({
     searchValue: searchKeyword,
@@ -32,8 +37,11 @@ const findOffers = async () => {
   });
   await ind.run();
   const offers = await ind.showOffers();
-  ind.writeToCsv(offers,'indeed.com');
-  ind.saveDataToJson(offers, 'indeed.com');
+  ind.writeToCsv(offers.slice(0, limitResults), `indeed.com-${searchKeyword}`);
+  ind.saveDataToJson(
+    offers.slice(0, limitResults),
+    `indeed.com-${searchKeyword}`,
+  );
 
   const pracuj = new PracujScrapper({
     searchValue: searchKeyword,
@@ -41,8 +49,14 @@ const findOffers = async () => {
   });
   await pracuj.run();
   const jobOffers = await pracuj.showOffers();
-  pracuj.writeToCsv(jobOffers.slice(0, limitResults), 'it.pracuj.pl');
-  pracuj.saveDataToJson(jobOffers.slice(0, limitResults), 'it.pracuj.pl');
+  pracuj.writeToCsv(
+    jobOffers.slice(0, limitResults),
+    `it.pracuj.pl-${searchKeyword}`,
+  );
+  pracuj.saveDataToJson(
+    jobOffers.slice(0, limitResults),
+    `it.pracuj.pl-${searchKeyword}`,
+  );
 };
 
 findOffers();

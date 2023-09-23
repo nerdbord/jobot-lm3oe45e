@@ -1,12 +1,14 @@
 {
   "scripts": {
-    "start": "ts-node ./src/scripts/findOffers.ts",
+    "start": "ts-node ./src/bot/bot.ts",
     "server": "ts-node ./src/server.ts",
     "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
   },
   "devDependencies": {
     "@types/node": "^18.15.7",
+    "@types/node-schedule": "^2.1.0",
     "@types/puppeteer": "^7.0.4",
+    "@types/yargs": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "eslint": "^8.49.0",
@@ -19,6 +21,7 @@
   },
   "dependencies": {
     "csv-stringify": "^6.4.2",
+    "node-schedule": "^2.1.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "yargs": "^17.7.2"
