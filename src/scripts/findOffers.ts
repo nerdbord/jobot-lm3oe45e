@@ -29,19 +29,14 @@ export const findOffers = async () => {
   const searchKeyword = argv.s;
   const limitResults = argv.l;
 
-  console.log(searchKeyword);
-
   const ind = new IndeedScrapper({
     searchValue: searchKeyword,
     maxRecords: limitResults,
   });
   await ind.run();
   const offers = await ind.showOffers();
-  ind.writeToCsv(offers.slice(0, limitResults), `indeed.com-${searchKeyword}`);
-  ind.saveDataToJson(
-    offers.slice(0, limitResults),
-    `indeed.com-${searchKeyword}`,
-  );
+  ind.writeToCsv(offers, `indeed.com`);
+  ind.saveDataToJson(offers, `indeed.com`);
 
   const pracuj = new PracujScrapper({
     searchValue: searchKeyword,
@@ -49,14 +44,8 @@ export const findOffers = async () => {
   });
   await pracuj.run();
   const jobOffers = await pracuj.showOffers();
-  pracuj.writeToCsv(
-    jobOffers.slice(0, limitResults),
-    `it.pracuj.pl-${searchKeyword}`,
-  );
-  pracuj.saveDataToJson(
-    jobOffers.slice(0, limitResults),
-    `it.pracuj.pl-${searchKeyword}`,
-  );
+  pracuj.writeToCsv(jobOffers, `it.pracuj.pl-${searchKeyword}`);
+  pracuj.saveDataToJson(jobOffers, `it.pracuj.pl-${searchKeyword}`);
 };
 
 findOffers();

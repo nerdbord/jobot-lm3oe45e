@@ -7,19 +7,25 @@ export class Bot {
   constructor() {
     this.setupCronJob();
   }
-
+  //
   runNpmCommand(searchValue: string, amount: number) {
-    const command = `ts-node ./src/scripts/findOffers.ts -s "${searchValue}" -l ${amount}`;
-    exec(command, (error, stdout, stderr) => {
+    const command = `npm run scrap:offers -- -s "${searchValue}" -l ${amount}`;
+    const childProcess = exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error: ${error.message}`);
         return;
       }
       if (stderr) {
-        console.error(`Error: ${stderr}`);
         return;
       }
       console.log(`Success: ${stdout}`);
+    });
+    childProcess.on('exit', (code) => {
+      if (code === 0) {
+        console.log('Zapisano pliki.');
+      } else {
+        console.error(`Błąd podczas zapisywania plików. Kod wyjścia: ${code}`);
+      }
     });
   }
 
@@ -30,5 +36,4 @@ export class Bot {
     });
   }
 }
-
 new Bot();

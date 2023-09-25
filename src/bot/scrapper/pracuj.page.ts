@@ -182,6 +182,7 @@ export class PracujScrapper extends Scrapper {
       console.error(' | Something went wrong:', JSON.stringify(error));
     } finally {
       await this.closePage(this.page);
+      await this.closeBrowser();
     }
   }
 }
