@@ -36,7 +36,6 @@ const server: Server = createServer(async (request, response: ServerResponse) =>
     await pracuj.run();
     pracujOffers = await pracuj.showOffers();
     offers = offers.concat(pracujOffers);
-    console.log('Offers count:', offers.length);
 
     response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify(offers));
