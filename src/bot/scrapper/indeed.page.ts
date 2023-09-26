@@ -105,7 +105,7 @@ export class IndeedScrapper extends Scrapper {
   async getAllPagesLinks(): Promise<void> {
     await this.getPageLinks();
     let isNextPage = await this.checkIfIsNextPage();
-    while (isNextPage) {
+    while (isNextPage && this.jobUrls.length < this.maxRecords) {
       isNextPage = await this.checkIfIsNextPage();
       await this.getPageLinks();
       await this.checkIfIsNextPage();

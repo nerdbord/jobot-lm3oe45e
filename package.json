@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "ts-node ./src/scripts/findOffers.ts",
-    "server": "ts-node ./src/server.ts",
+    "server": "npx nodemon ./src/server.ts",
     "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
   },
   "devDependencies": {
@@ -12,6 +12,7 @@
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "puppeteer": "^21.1.1",
     "ts-node": "^10.9.1",
