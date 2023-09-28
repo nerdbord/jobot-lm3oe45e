@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "ts-node ./src/bot/bot.ts",
-    "server": "npx nodemon ./src/server.ts",
+    "server": "ts-node ./src/server.ts",
+    "server:debug": "npx nodemon ./src/server.ts",
     "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
   },
   "devDependencies": {

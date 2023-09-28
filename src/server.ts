@@ -7,16 +7,18 @@ import { formatDate } from './helpers/helpers';
 
 const PORT = 4200 || process.env.PORT;
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  url: 'redis://red-ckau0iesmu8c738svohg:6379'
+});
+
+redisClient.on('connect', () => console.log('Redis Client Connected'));
+redisClient.on('error', (err) =>
+console.log('Redis Client Connection Error', err),
+);
 
 (async () => {
   await redisClient.connect();
 })();
-
-redisClient.on('connect', () => console.log('Redis Client Connected'));
-redisClient.on('error', (err) =>
-  console.log('Redis Client Connection Error', err),
-);
 
 const server: Server = createServer(
   async (request: IncomingMessage, response: ServerResponse) => {
@@ -31,7 +33,7 @@ const server: Server = createServer(
       searchValue = url.pathname.split('/')[2].replace(/[_\-\+]/g, ' ');
 
       const date = formatDate(new Date());
-      const cacheKey = `offers-${searchValue}-${date}`;
+      const cacheKey = `${request.url}-${date}`;
       const expirationTime = 60 * 60 * 2;
 
       const data = await redisClient.get(cacheKey).catch((err) => {
