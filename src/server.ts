@@ -41,9 +41,9 @@ const server: Server = createServer(
         response.end(err.toString());
       });
 
+      response.setHeader('Content-Type', 'application/json');
       if (data != null) {
         console.log('cache hit');
-        response.setHeader('Content-Type', 'application/json');
         response.end(data);
       } else {
         console.log('cache missed');
@@ -51,13 +51,13 @@ const server: Server = createServer(
         let pracujOffers = [];
         let offers = [];
 
-        // const ind = new IndeedScrapper({
-        //   searchValue,
-        //   maxRecords: limitValue,
-        // });
-        // await ind.run();
-        // indeedOffers = await ind.showOffers();
-        // offers = offers.concat(indeedOffers);
+        const ind = new IndeedScrapper({
+          searchValue,
+          maxRecords: limitValue,
+        });
+        await ind.run();
+        indeedOffers = await ind.showOffers();
+        offers = offers.concat(indeedOffers);
 
         const pracuj = new PracujScrapper({
           searchValue,
@@ -68,7 +68,6 @@ const server: Server = createServer(
         offers = offers.concat(pracujOffers);
 
         const offersJSON = JSON.stringify(offers);
-        response.setHeader('Content-Type', 'application/json');
         await redisClient.setEx(cacheKey, expirationTime, offersJSON);
 
         response.end(offersJSON);

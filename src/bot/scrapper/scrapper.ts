@@ -29,6 +29,7 @@ export class Scrapper implements ScrapperOptions {
 
   async initializePage() {
     this.browser = await puppeteer.launch({
+      headless: "new",
       args: [
         "--disable-setuid-sandbox",
         "--no-sandbox",
