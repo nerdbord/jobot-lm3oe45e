@@ -9,6 +9,8 @@ import { Page, Browser } from 'puppeteer';
 import { JobOffer } from './types';
 import { formatDate } from '../../helpers/helpers';
 
+require("dotenv").config();
+
 export interface ScrapperOptions {
   searchValue: string;
   maxRecords: number;
@@ -26,7 +28,19 @@ export class Scrapper implements ScrapperOptions {
   }
 
   async initializePage() {
-    this.browser = await puppeteer.launch({ headless: 'new' });
+    this.browser = await puppeteer.launch({ 
+      headless: 'new',
+      args: [
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote"
+      ],
+      executablePath: 
+        process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH 
+        : puppeteer.executablePath() 
+    });
     return this.browser.newPage();
   }
   async navigateToUrl(page: Page, url: string) {
