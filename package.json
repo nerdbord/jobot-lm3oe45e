@@ -5,9 +5,6 @@
     "server:debug": "npx nodemon ./src/server.ts",
     "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
   },
-  "engines": {
-    "node": "=16"
-  },
   "devDependencies": {
     "@types/node": "^18.15.7",
     "@types/node-schedule": "^2.1.0",

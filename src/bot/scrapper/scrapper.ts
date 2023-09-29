@@ -33,7 +33,7 @@ export class Scrapper implements ScrapperOptions {
       args: [
         "--disable-setuid-sandbox",
         "--no-sandbox",
-        "--single-process",
+        // "--single-process",
         "--no-zygote",
       ],
       executablePath:
