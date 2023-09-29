@@ -28,18 +28,17 @@ export class Scrapper implements ScrapperOptions {
   }
 
   async initializePage() {
-    this.browser = await puppeteer.launch({ 
-      headless: 'new',
+    this.browser = await puppeteer.launch({
       args: [
         "--disable-setuid-sandbox",
         "--no-sandbox",
         "--single-process",
-        "--no-zygote"
+        "--no-zygote",
       ],
-      executablePath: 
+      executablePath:
         process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH 
-        : puppeteer.executablePath() 
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
     });
     return this.browser.newPage();
   }
