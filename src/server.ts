@@ -24,7 +24,7 @@ const server: Server = createServer(
   async (request: IncomingMessage, response: ServerResponse) => {
     let limitValue = 10;
     let searchValue = '';
-    const url = new URL(`http://localhost:${PORT}${request.url}`);
+    const url = new URL(`https://nerdbord-jobot.onrender.com${request.url}`);
     if (request.method === 'GET' && url.pathname.startsWith('/offers/')) {
       const searchParams = Object.fromEntries(url.searchParams);
       if (searchParams.hasOwnProperty('l')) {
