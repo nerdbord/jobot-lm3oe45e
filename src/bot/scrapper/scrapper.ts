@@ -44,7 +44,11 @@ export class Scrapper implements ScrapperOptions {
     return this.browser.newPage();
   }
   async navigateToUrl(page: Page, url: string) {
-    await page.goto(url, { waitUntil: 'load' });
+    await page.setDefaultNavigationTimeout(0); 
+    await page.goto(url, { 
+      waitUntil: 'load', 
+      timeout: 0 
+    });
   }
 
   async searchForValue(page: Page, selector: string, value: string) {
