@@ -6,7 +6,7 @@
     "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
   },
   "engines": {
-    "node": ">=16"
+    "node": "=16"
   },
   "devDependencies": {
     "@types/node": "^18.15.7",
