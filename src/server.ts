@@ -60,13 +60,13 @@ const server: Server = createServer(
         indeedOffers = await ind.showOffers();
         offers = offers.concat(indeedOffers);
 
-        const pracuj = new PracujScrapper({
-          searchValue,
-          maxRecords: limitValue,
-        });
-        await pracuj.run();
-        pracujOffers = await pracuj.showOffers();
-        offers = offers.concat(pracujOffers);
+        // const pracuj = new PracujScrapper({
+        //   searchValue,
+        //   maxRecords: limitValue,
+        // });
+        // await pracuj.run();
+        // pracujOffers = await pracuj.showOffers();
+        // offers = offers.concat(pracujOffers);
 
         const offersJSON = JSON.stringify(offers);
         await redisClient.setEx(cacheKey, expirationTime, offersJSON);
