@@ -127,7 +127,9 @@ export class IndeedScrapper extends Scrapper {
   }
 
   async run(): Promise<void> {
-    this.page = await this.initializePage();
+    if(!this.page){
+      this.page = await this.initializePage();
+    }
     console.log('Page initialized');
     const urlToScrap = this.getUrlToScrap();
     await this.navigateToUrl(this.page, urlToScrap);
@@ -138,7 +140,7 @@ export class IndeedScrapper extends Scrapper {
     this.jobUrls = this.jobUrls.slice(0, this.maxRecords);
     console.log('acquired all the URLs for scrapping')
     await this.getDataFromAllUrls();
-    console.log('Scrapping completed');
+    console.log('\nScrapping completed');
 
     // await this.closePage(this.page);
     await this.closeBrowser();

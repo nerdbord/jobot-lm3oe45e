@@ -43,7 +43,7 @@ const server: Server = createServer(
       });
 
       response.setHeader('Content-Type', 'application/json');
-      if (data != null) {
+      if (data) {
         console.log('cache hit');
         response.end(data);
       } else {
