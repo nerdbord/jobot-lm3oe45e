@@ -1,8 +1,10 @@
 {
   "scripts": {
     "start": "ts-node ./src/bot/bot.ts",
-    "server": "npx nodemon ./src/server.ts",
-    "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
+    "server": "ts-node ./src/server.ts",
+    "server:debug": "npx nodemon ./src/server.ts",
+    "scrap:offers": "ts-node ./src/scripts/findOffers.ts",
+    "gcp-build": "node node_modules/puppeteer/install.js"
   },
   "devDependencies": {
     "@types/node": "^18.15.7",
@@ -22,6 +24,7 @@
   },
   "dependencies": {
     "csv-stringify": "^6.4.2",
+    "dotenv": "^16.3.1",
     "node-schedule": "^2.1.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",

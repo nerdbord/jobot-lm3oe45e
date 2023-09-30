@@ -120,7 +120,7 @@ export class PracujScrapper extends Scrapper {
     try {
       await this.page
         .waitForSelector('[data-test="bottom-pagination-button-next"]', {
-          timeout: 5000,
+          timeout: 0,
         })
         .then(() => (isNextPage = true))
         .catch(() => (isNextPage = false));

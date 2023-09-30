@@ -127,16 +127,18 @@ export class IndeedScrapper extends Scrapper {
   }
 
   async run(): Promise<void> {
-    this.page = await this.initializePage();
+    if(!this.page){
+      this.page = await this.initializePage();
+    }
+    await this.page.setViewport({ width: 600, height: 1024 });
     const urlToScrap = this.getUrlToScrap();
     await this.navigateToUrl(this.page, urlToScrap);
-    await this.page.setViewport({ width: 600, height: 1024 });
 
     await this.getAllPagesLinks();
     this.jobUrls = this.jobUrls.slice(0, this.maxRecords);
     await this.getDataFromAllUrls();
 
-    await this.closePage(this.page);
+    // await this.closePage(this.page);
     await this.closeBrowser();
   }
 }

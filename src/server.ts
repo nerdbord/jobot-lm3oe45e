@@ -7,22 +7,25 @@ import { formatDate } from './helpers/helpers';
 
 const PORT = 4200 || process.env.PORT;
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  url: 'redis://red-ckau0iesmu8c738svohg:6379'
+});
+// const redisClient = redis.createClient();
+
+redisClient.on('connect', () => console.log('Redis Client Connected'));
+redisClient.on('error', (err) =>
+console.log('Redis Client Connection Error', err),
+);
 
 (async () => {
   await redisClient.connect();
 })();
 
-redisClient.on('connect', () => console.log('Redis Client Connected'));
-redisClient.on('error', (err) =>
-  console.log('Redis Client Connection Error', err),
-);
-
 const server: Server = createServer(
   async (request: IncomingMessage, response: ServerResponse) => {
     let limitValue = 10;
     let searchValue = '';
-    const url = new URL(`http://localhost:${PORT}${request.url}`);
+    const url = new URL(`http://localhost${request.url}`);
     if (request.method === 'GET' && url.pathname.startsWith('/offers/')) {
       const searchParams = Object.fromEntries(url.searchParams);
       if (searchParams.hasOwnProperty('l')) {
@@ -31,7 +34,7 @@ const server: Server = createServer(
       searchValue = url.pathname.split('/')[2].replace(/[_\-\+]/g, ' ');
 
       const date = formatDate(new Date());
-      const cacheKey = `offers-${searchValue}-${date}`;
+      const cacheKey = `${request.url}-${date}`;
       const expirationTime = 60 * 60 * 2;
 
       const data = await redisClient.get(cacheKey).catch((err) => {
@@ -39,16 +42,15 @@ const server: Server = createServer(
         response.end(err.toString());
       });
 
-      if (data != null) {
+      response.setHeader('Content-Type', 'application/json');
+      if (data) {
         console.log('cache hit');
-        response.setHeader('Content-Type', 'application/json');
         response.end(data);
       } else {
         console.log('cache missed');
         let indeedOffers = [];
         let pracujOffers = [];
         let offers = [];
-
         const ind = new IndeedScrapper({
           searchValue,
           maxRecords: limitValue,
@@ -66,7 +68,6 @@ const server: Server = createServer(
         offers = offers.concat(pracujOffers);
 
         const offersJSON = JSON.stringify(offers);
-        response.setHeader('Content-Type', 'application/json');
         await redisClient.setEx(cacheKey, expirationTime, offersJSON);
 
         response.end(offersJSON);
