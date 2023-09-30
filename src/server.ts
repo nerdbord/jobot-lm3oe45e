@@ -7,10 +7,10 @@ import { formatDate } from './helpers/helpers';
 
 const PORT = 4200 || process.env.PORT;
 
-const redisClient = redis.createClient({
-  url: 'redis://red-ckau0iesmu8c738svohg:6379'
-});
-// const redisClient = redis.createClient();
+// const redisClient = redis.createClient({
+//   url: 'redis://red-ckau0iesmu8c738svohg:6379'
+// });
+const redisClient = redis.createClient();
 
 redisClient.on('connect', () => console.log('Redis Client Connected'));
 redisClient.on('error', (err) =>
@@ -51,13 +51,15 @@ const server: Server = createServer(
         let indeedOffers = [];
         let pracujOffers = [];
         let offers = [];
-
+        console.log('Create new IndeedScrapper');
         const ind = new IndeedScrapper({
           searchValue,
           maxRecords: limitValue,
         });
+        console.log('Run scrapping')
         await ind.run();
         indeedOffers = await ind.showOffers();
+        console.log('Indeed offers:', indeedOffers);
         offers = offers.concat(indeedOffers);
 
         // const pracuj = new PracujScrapper({

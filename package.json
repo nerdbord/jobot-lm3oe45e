@@ -3,7 +3,8 @@
     "start": "ts-node ./src/bot/bot.ts",
     "server": "ts-node ./src/server.ts",
     "server:debug": "npx nodemon ./src/server.ts",
-    "scrap:offers": "ts-node ./src/scripts/findOffers.ts"
+    "scrap:offers": "ts-node ./src/scripts/findOffers.ts",
+    "gcp-build": "node node_modules/puppeteer/install.js"
   },
   "devDependencies": {
     "@types/node": "^18.15.7",

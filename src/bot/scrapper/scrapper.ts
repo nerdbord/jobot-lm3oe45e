@@ -30,6 +30,7 @@ export class Scrapper implements ScrapperOptions {
   async initializePage() {
     this.browser = await puppeteer.launch({
       headless: "new",
+      timeout: 0,
       args: [
         "--disable-setuid-sandbox",
         "--no-sandbox",
@@ -46,8 +47,7 @@ export class Scrapper implements ScrapperOptions {
   
   async navigateToUrl(page: Page, url: string) {
     await page.goto(url, { 
-      waitUntil: 'load',
-      timeout: 60000
+      waitUntil: 'load'
     });
   }
 
