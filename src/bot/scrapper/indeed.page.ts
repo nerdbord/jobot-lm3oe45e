@@ -130,11 +130,12 @@ export class IndeedScrapper extends Scrapper {
     if(!this.page){
       this.page = await this.initializePage();
     }
+    await this.page.setViewport({ width: 600, height: 1024 });
     console.log('Page initialized');
     const urlToScrap = this.getUrlToScrap();
     await this.navigateToUrl(this.page, urlToScrap);
-    console.log('On first page');
-    await this.page.setViewport({ width: 600, height: 1024 });
+    const firstPageBodyDebug = await this.page.$eval('body', el => el.textContent)
+    console.log('On first page:', firstPageBodyDebug);
 
     await this.getAllPagesLinks();
     this.jobUrls = this.jobUrls.slice(0, this.maxRecords);
