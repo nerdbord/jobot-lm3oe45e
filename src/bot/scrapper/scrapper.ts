@@ -42,12 +42,14 @@ export class Scrapper implements ScrapperOptions {
           ? process.env.PUPPETEER_EXECUTABLE_PATH
           : puppeteer.executablePath(),
     });
+    console.log('Browser initialized');
     return this.browser.newPage();
   }
   
   async navigateToUrl(page: Page, url: string) {
     await page.goto(url, { 
-      waitUntil: 'load'
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
     });
   }
 

@@ -25,7 +25,7 @@ const server: Server = createServer(
   async (request: IncomingMessage, response: ServerResponse) => {
     let limitValue = 10;
     let searchValue = '';
-    const url = new URL(`https://nerdbord-jobot.onrender.com${request.url}`);
+    const url = new URL(`http://localhost${request.url}`);
     if (request.method === 'GET' && url.pathname.startsWith('/offers/')) {
       const searchParams = Object.fromEntries(url.searchParams);
       if (searchParams.hasOwnProperty('l')) {
@@ -51,15 +51,12 @@ const server: Server = createServer(
         let indeedOffers = [];
         let pracujOffers = [];
         let offers = [];
-        console.log('Create new IndeedScrapper');
         const ind = new IndeedScrapper({
           searchValue,
           maxRecords: limitValue,
         });
-        console.log('Run scrapping')
         await ind.run();
         indeedOffers = await ind.showOffers();
-        console.log('Indeed offers:', indeedOffers);
         offers = offers.concat(indeedOffers);
 
         // const pracuj = new PracujScrapper({
