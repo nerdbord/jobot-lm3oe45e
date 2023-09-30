@@ -10,6 +10,7 @@ const PORT = 4200 || process.env.PORT;
 const redisClient = redis.createClient({
   url: 'redis://red-ckau0iesmu8c738svohg:6379'
 });
+// const redisClient = redis.createClient();
 
 redisClient.on('connect', () => console.log('Redis Client Connected'));
 redisClient.on('error', (err) =>

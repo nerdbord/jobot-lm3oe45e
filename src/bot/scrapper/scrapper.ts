@@ -44,10 +44,9 @@ export class Scrapper implements ScrapperOptions {
     return this.browser.newPage();
   }
   async navigateToUrl(page: Page, url: string) {
-    await page.setDefaultNavigationTimeout(0); 
     await page.goto(url, { 
-      waitUntil: 'load', 
-      timeout: 0 
+      waitUntil: 'load',
+      timeout: 0
     });
   }
 
