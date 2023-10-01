@@ -51,13 +51,14 @@ const server: Server = createServer(
         let indeedOffers = [];
         let pracujOffers = [];
         let offers = [];
-        const ind = new IndeedScrapper({
-          searchValue,
-          maxRecords: limitValue,
-        });
-        await ind.run();
-        indeedOffers = await ind.showOffers();
-        offers = offers.concat(indeedOffers);
+        
+        // const ind = new IndeedScrapper({
+        //   searchValue,
+        //   maxRecords: limitValue,
+        // });
+        // await ind.run();
+        // indeedOffers = await ind.showOffers();
+        // offers = offers.concat(indeedOffers);
 
         const pracuj = new PracujScrapper({
           searchValue,
